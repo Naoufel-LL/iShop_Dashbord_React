@@ -56,7 +56,7 @@ const Datatable = () => {
       }
     },
     {
-      field: "user_id",
+      field: "auth_id",
       headerName: "",
       width: 300,
       renderCell: (params) => {
@@ -101,7 +101,8 @@ const Datatable = () => {
     verified,
     city,
     birth,
-    email
+    email,
+    auth_id
   } = doc.data();
   list.push({
     firstName:firstName,
@@ -114,7 +115,8 @@ const Datatable = () => {
     verified:verified,
     city:city,
     birth:birth,
-    user_id:doc.id
+    user_id:doc.id,
+    auth_id:auth_id
   });
  });
  setUsers(list)

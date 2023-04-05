@@ -16,43 +16,6 @@ import Skeleton from '@mui/material/Skeleton';
 import Datatable5 from "../../components/datatable/Datatable5";
 
 const List5 = () => {
-    const [loading,setLoading]=useState(false)
-    const [reports,setReports] = useState([])
-    useEffect(()=>{
-        const list = []
-        console.log("clear")
-        const q = query(collection(db, "reports"))
-       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-     querySnapshot.forEach((doc) => {
-      const {
-        product_id,
-        product_img,
-        product_title,
-        report_comment,
-        report_reason,
-        report_time,
-        user_id,
-        user_name,
-        user_pic
-      } = doc.data();
-      list.push({
-        product_id:product_id,
-        product_img:product_img,
-        product_title:product_title,
-        report_comment:report_comment,
-        report_reason:report_reason,
-        report_time:report_time,
-        user_id:user_id,
-        user_name:user_name,
-        user_pic:user_pic,
-        report_id:doc.id
-         });
-     });
-     setReports(list)
-     setLoading(true)
-     console.log(reports)
-    });
-      },[])
   return (
     <div className="list">
       <Sidebar/>

@@ -4,10 +4,50 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-
+import { useEffect,useState } from "react";
+import { db } from "../../firebase";
+import { collection,doc,getCountFromServer,onSnapshot } from "firebase/firestore";
+import { Skeleton } from "@mui/material";
 const Widget = ({ type }) => {
   let data;
+  const [usernbr,setUserNbr] = useState(0)
+  const [commandenbr,setCommandeNbr] = useState(0)
+  const [productnbr,setProductNbr] = useState(0)
+ const  [totalmad,setTotal] = useState(0)
+ const [loading,setLoading]=useState(false)
+  useEffect(async ()=>{
+    try {
+      const colusers = collection(db, "users");
+    const snapshot = await getCountFromServer(colusers);
+    console.log('count users : ', snapshot.data().count);
+    setUserNbr(snapshot.data().count)
 
+    const colproduits = collection(db, "produits");
+    const snapshot1 = await getCountFromServer(colproduits);
+    console.log('count produits : ', snapshot1.data().count);
+    setProductNbr(snapshot1.data().count)
+
+    const colcommandes = collection(db, "commandes");
+    const snapshot2 = await getCountFromServer(colcommandes);
+    console.log('count commandes : ', snapshot2.data().count);
+    setCommandeNbr(snapshot2.data().count)
+     
+    const unsubscribe = onSnapshot(colcommandes, (querySnapshot) => {
+      let temp = 0
+      querySnapshot.forEach((doc) => {
+       const {
+        total
+       } = doc.data();
+       console.log(total)
+       temp = temp + total
+       setTotal(temp)
+      });
+     });
+    } catch (error) {
+       console.log(error)    }
+       console.log(totalmad)
+       setLoading(true)
+  },[])
   //temporary
   const amount = 100;
   const diff = 20;
@@ -17,7 +57,9 @@ const Widget = ({ type }) => {
       data = {
         title: "USERS",
         isMoney: false,
-        link: "See all users",
+        ct : usernbr,
+        url: "/users",
+        link: "Voir les users",
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -31,9 +73,11 @@ const Widget = ({ type }) => {
       break;
     case "order":
       data = {
-        title: "ORDERS",
+        title: "PRODUITS",
+        url:"/products",
+        ct:productnbr,
         isMoney: false,
-        link: "View all orders",
+        link: "Voir les produits",
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -47,9 +91,11 @@ const Widget = ({ type }) => {
       break;
     case "earning":
       data = {
-        title: "EARNINGS",
+        title: "COMMANDES",
         isMoney: true,
-        link: "View net earnings",
+        url:"/livred",
+        ct:commandenbr,
+        link: "Voir les commandes livrées",
         icon: (
           <MonetizationOnOutlinedIcon
             className="icon"
@@ -79,13 +125,17 @@ const Widget = ({ type }) => {
   }
 
   return (
-    <div className="widget">
+    <div style={{width:"100%",height:"100%"}}>
+      {!loading ? <Skeleton width={400} height={150} /> :
+      <div className="widget">
       <div className="left">
         <span className="title">{data.title}</span>
         <span className="counter">
-          {data.isMoney && "$"} {amount}
+         {data.ct}
         </span>
-        <span className="link">{data.link}</span>
+        <span className="link">
+           <a href={data.url}>{data.link}</a>
+          </span>
       </div>
       <div className="right">
         <div className="percentage positive">
@@ -94,6 +144,8 @@ const Widget = ({ type }) => {
         </div>
         {data.icon}
       </div>
+    </div>
+      }
     </div>
   );
 };

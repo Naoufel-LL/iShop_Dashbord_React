@@ -4,23 +4,44 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
-
+import { useEffect,useState } from "react";
+import { db } from "../../firebase";
+import { collection,doc,getCountFromServer,onSnapshot,query,where } from "firebase/firestore";
+import { Skeleton } from "@mui/material";
 const Featured = () => {
+ const  [totalmad,setTotal] = useState(0)
+ const  [loading,setLoading] = useState(false)
+useEffect(()=>{
+  const q = query(collection(db, "commandes"),where("status", "==",true))
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    let temp = 0
+    querySnapshot.forEach((doc) => {
+     const {
+      total
+     } = doc.data();
+     console.log(total)
+     temp = temp + total
+     setTotal(temp)
+    });
+    setLoading(true)
+   });
+},[])
   return (
-    <div className="featured">
+    <div>
+      {!loading ? <Skeleton width={600}  height={300}/> :
+      <div className="featured">
       <div className="top">
-        <h1 className="title">Total Revenue</h1>
+        <h1 className="title">Total des ventes réalisées</h1>
         <MoreVertIcon fontSize="small" />
       </div>
       <div className="bottom">
         <div className="featuredChart">
-          <CircularProgressbar value={70} text={"70%"} strokeWidth={5} />
+          <CircularProgressbar value={70} text={"90%"} strokeWidth={5} />
         </div>
-        <p className="title">Total sales made today</p>
-        <p className="amount">$420</p>
+        <p className="title">Totales Commandes Livrées</p>
+        <p className="amount">{totalmad} DH</p>
         <p className="desc">
-          Previous transactions processing. Last payments may not be included.
-        </p>
+        Traitement des transactions précédentes. Les commandes non livrées peuvent ne pas être inclus.        </p>
         <div className="summary">
           <div className="item">
             <div className="itemTitle">Target</div>
@@ -45,6 +66,8 @@ const Featured = () => {
           </div>
         </div>
       </div>
+    </div>
+      }
     </div>
   );
 };

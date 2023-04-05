@@ -39,7 +39,6 @@ const Datatable3 = () => {
         headerName: "",
         width: 150,
         renderCell: (params) => {
-          console.log(params);
           return (
             <>
             <img style={{width:150,height:200,objectFit:"contain"}} src={params.value}/>
@@ -55,7 +54,6 @@ const Datatable3 = () => {
     { field: 'quantity', headerName: 'Quatity', width: 40 },
     { field: 'total', headerName: 'Total (DH)', width: 130,
     renderCell: (params) => {
-      console.log(params);
       return (
         <>
           <h3>{params.value}DH</h3>
@@ -68,7 +66,6 @@ const Datatable3 = () => {
       headerName: "Statut",
       width: 100,
       renderCell: (params) => {
-        console.log(params);
         return (
           <div>
               {params.value ?<h3 style={{color:'green'}}>Livred</h3> : <h3 style={{color:'red'}}>Not Livred</h3>}
@@ -81,7 +78,6 @@ const Datatable3 = () => {
       headerName: "",
       width: 150,
       renderCell: (params) => {
-        console.log(params);
         return (
           <div>
        <Button onClick={()=>Livrer(params.value)} variant="contained" color="success" endIcon={<LocalShippingIcon />}>
