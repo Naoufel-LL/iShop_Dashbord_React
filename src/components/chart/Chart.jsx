@@ -7,20 +7,42 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {db} from '../../firebase'
+import { useState,useEffect } from "react";
+import { collection, query, where, onSnapshot ,orderBy,limit } from "firebase/firestore";
+import Skeleton from '@mui/material/Skeleton';
 
-const data = [
-  { name: "January", Total: 1200 },
-  { name: "February", Total: 2100 },
-  { name: "March", Total: 800 },
-  { name: "April", Total: 1600 },
-  { name: "May", Total: 900 },
-  { name: "June", Total: 1700 },
-];
 
 const Chart = ({ aspect, title }) => {
+  
+   const [data,setData] = useState([])
+   const [loading,setLoading] = useState(false)
+   useEffect(()=>{
+    const list = []
+    console.log("data")
+    const q = query(collection(db, "stats"),limit(7),orderBy("date","desc"))
+   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+ querySnapshot.forEach((doc) => {
+  const {
+    total
+  } = doc.data();
+  list.push({
+     Jour : doc.id,
+     Total:total
+  });
+ });
+ setData(list)
+ setLoading(true)
+ console.log(data)
+ setData(data.reverse())
+});
+  },[])
   return (
-    <div className="chart">
-      <div className="title">{title}</div>
+    <div style={{width:'600px'}}>
+       {!loading ? <Skeleton width={600} height={400} />
+      :
+      <div className="chart">
+      <div className="title">Derniers 7 jours (Revenue)</div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <AreaChart
           width={730}
@@ -30,22 +52,25 @@ const Chart = ({ aspect, title }) => {
         >
           <defs>
             <linearGradient id="total" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              <stop offset="5%" stopColor="#44BE89" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#44BE89" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <XAxis dataKey="name" stroke="gray" />
+          <XAxis dataKey="Jour" stroke="gray" />
           <CartesianGrid strokeDasharray="3 3" className="chartGrid" />
           <Tooltip />
           <Area
-            type="monotone"
+            type="linear"
             dataKey="Total"
-            stroke="#8884d8"
+            stroke="#44BE89"
             fillOpacity={1}
+          activeDot={{ r: 8 }}
             fill="url(#total)"
           />
         </AreaChart>
       </ResponsiveContainer>
+    </div> 
+      }
     </div>
   );
 };

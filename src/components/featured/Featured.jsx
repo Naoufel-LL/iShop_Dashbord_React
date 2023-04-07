@@ -28,7 +28,7 @@ useEffect(()=>{
 },[])
   return (
     <div>
-      {!loading ? <Skeleton width={600}  height={300}/> :
+      {!loading ? <Skeleton width={600}  height={400}/> :
       <div className="featured">
       <div className="top">
         <h1 className="title">Total des ventes réalisées</h1>

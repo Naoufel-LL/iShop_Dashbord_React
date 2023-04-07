@@ -7,6 +7,7 @@ import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
 import Datatable3 from "../../components/datatable/Datatable3";
 const Home = () => {
+
   return (
     <div className="home">
       <Sidebar />
