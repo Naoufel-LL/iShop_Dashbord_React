@@ -16,6 +16,9 @@ const Widget = ({ type }) => {
  const  [totalmad,setTotal] = useState(0)
  const [loading,setLoading]=useState(false)
  const [percentageCommande,setPercentageCommande] = useState(0)
+ const [percentageuser,setPercentageUser] = useState(0)
+ const [percentageproduct,setPercentageProduct] = useState(0)
+
   useEffect(async ()=>{
     try {
       const colusers = collection(db, "users");
@@ -37,8 +40,13 @@ const Widget = ({ type }) => {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       console.log("Document data:", docSnap.data().nbrCommande);
-       let perc = ((docSnap.data().nbrCommande) / snapshot2.data().count) * 100
-       setPercentageCommande(perc)
+       let percCommande = ((docSnap.data().nbrCommande) / snapshot2.data().count) * 100
+       setPercentageCommande(percCommande.toFixed(2))
+       let percUser = ((docSnap.data().newusers) / snapshot.data().count) * 100
+       setPercentageUser(percUser.toFixed(2))
+       let percProduct = ((docSnap.data().newproduct) / snapshot1.data().count) * 100
+       setPercentageProduct(percProduct.toFixed(2))
+
     } else {
       console.log("No such document!");
        setPercentageCommande(0)
@@ -67,6 +75,7 @@ const Widget = ({ type }) => {
     case "user":
       data = {
         title: "USERS",
+        percentage:`${percentageuser}`,
         isMoney: false,
         ct : usernbr,
         url: "/users",
@@ -86,6 +95,7 @@ const Widget = ({ type }) => {
       data = {
         title: "PRODUITS",
         url:"/products",
+        percentage:`${percentageproduct}`,
         ct:productnbr,
         isMoney: false,
         link: "Voir les produits",
@@ -103,6 +113,7 @@ const Widget = ({ type }) => {
     case "earning":
       data = {
         title: "COMMANDES",
+        percentage:`${percentageCommande}`,
         isMoney: true,
         url:"/livred",
         ct:commandenbr,
@@ -151,7 +162,7 @@ const Widget = ({ type }) => {
       <div className="right">
         <div className="percentage positive">
           <KeyboardArrowUpIcon />
-          {percentageCommande.toFixed(2)} %
+          {data.percentage} %
         </div>
         {data.icon}
       </div>

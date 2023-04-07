@@ -3,24 +3,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { userColumns, userRows } from "../../datatablesource";
 import { Link } from "react-router-dom";
 import { useState,useEffect } from "react";
-import { collection, query, where, onSnapshot ,orderBy } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { collection, query, where, onSnapshot ,orderBy,getDoc,doc,updateDoc } from "firebase/firestore";
 import { getFirestore } from 'firebase/firestore';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Stack from '@mui/material/Stack';
 import "../table/table.scss";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import CircularProgress from '@mui/material/CircularProgress';
 import {db} from '../../firebase'
 import Avatar from "@mui/material/Avatar";
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import Skeleton from '@mui/material/Skeleton';
-
+import { Backdrop } from "@mui/material";
 const Datatable = () => {
   const columns = [
     {
@@ -56,32 +50,59 @@ const Datatable = () => {
       }
     },
     {
-      field: "auth_id",
+      field: "user_id",
       headerName: "",
-      width: 300,
+      width: 120,
       renderCell: (params) => {
         console.log(params);
         return (
           <div>
-      <Stack direction="row" spacing={1}>
-      <Button   variant="contained" color="warning" endIcon={<NotInterestedIcon />}>
+      <Button onClick={()=>BanUser(params.value)}   variant="contained" color="warning" endIcon={<NotInterestedIcon />}>
         Block
       </Button>
-      <Button  variant="outlined" color="error" startIcon={<DeleteIcon />}>
-        Supprimer
-      </Button>
-    </Stack>
          </div>
         );
       }
     },
-
+    {
+      field: "user_id1",
+      headerName: "",
+      width: 150,
+      renderCell: (params) => {
+        console.log(params);
+        return (
+          <div>
+      <Button onClick={()=>unBanUser(params.value)}   variant="contained" color="success" endIcon={<NotInterestedIcon />}>
+        UnBlock
+      </Button>
+         </div>
+        );
+      }
+    },
+    {
+      field: "auth_id",
+      headerName: "",
+      width: 150,
+      renderCell: (params) => {
+        console.log(params);
+        return (
+          <div>
+      <Button   variant="contained" color="error" endIcon={<DeleteIcon />}>
+        Supprimer
+      </Button>
+         </div>
+        );
+      }
+    }
 
    
   ];
   const [data, setData] = useState(userRows);
   const [users,setUsers]=useState([])
   const [loading,setLoading] = useState(false)
+  const [open,setOpen] = useState(false)
+  const navigate = useNavigate()
+
   const handleDelete = (id) => {
     setData(data.filter((item) => item.id !== id));
   };
@@ -116,6 +137,7 @@ const Datatable = () => {
     city:city,
     birth:birth,
     user_id:doc.id,
+    user_id1:doc.id,
     auth_id:auth_id
   });
  });
@@ -124,7 +146,28 @@ const Datatable = () => {
  console.log(users)
 });
   },[])
-
+   const BanUser = (id)=>{
+    setOpen(true)
+    const commandeRef = doc(db, "users", id);
+    updateDoc(commandeRef, {
+        banned:true
+    });
+    setTimeout(()=>{
+      setOpen(false)
+      window.location.reload(false);
+    },3000)
+   }
+   const unBanUser = (id)=>{
+    setOpen(true)
+    const commandeRef = doc(db, "users", id);
+    updateDoc(commandeRef, {
+        banned:false
+    });
+    setTimeout(()=>{
+      setOpen(false)
+      window.location.reload(false);
+    },3000)
+   }
   return (
     <div style={{padding:20}}>
         {!loading ? 
@@ -146,6 +189,13 @@ const Datatable = () => {
         <Skeleton  variant="rounded" height={60}/>
 </div>
         : <div style={{ height: 700, width: '100%' }}>
+        <Backdrop
+  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+  open={open}
+>
+<CircularProgress color="inherit" />
+
+</Backdrop>
       <DataGrid
         rows={users}
         getRowId={(row) => row.user_id}

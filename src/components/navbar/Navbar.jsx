@@ -21,12 +21,7 @@ const Navbar = () => {
             <LanguageOutlinedIcon className="icon" />
             English
           </div>
-          <div className="item">
-            <DarkModeOutlinedIcon
-              className="icon"
-              onClick={() => dispatch({ type: "TOGGLE" })}
-            />
-          </div>
+          
           <div className="item">
             <FullscreenExitOutlinedIcon className="icon" />
           </div>

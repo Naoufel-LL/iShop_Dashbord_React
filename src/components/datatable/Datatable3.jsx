@@ -22,16 +22,22 @@ import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import Skeleton from '@mui/material/Skeleton';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { useNavigate } from "react-router-dom";
+import { Backdrop } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Datatable3 = () => {
   const navigate = useNavigate();
 
   const Livrer = (id) =>{
+    setOpen(true)
     const commandeRef = doc(db, "commandes", id);
     updateDoc(commandeRef, {
         status:true
     });
-    navigate("/livred");
+    setTimeout(()=>{
+      setOpen(false)
+      window.location.reload(false);
+    },3000)
 }
   const columns = [
     {
@@ -91,7 +97,7 @@ const Datatable3 = () => {
   const [data, setData] = useState(userRows);
   const [products,setProducts]=useState([])
   const [loading,setLoading] = useState(false)
- 
+ const [open,setOpen]=useState(false)
   useEffect(()=>{
     const list = []
     console.log("clear")
@@ -161,6 +167,13 @@ const Datatable3 = () => {
         <Skeleton  variant="rounded" height={60}/>  <br />
         <Skeleton  variant="rounded" height={60}/>
 </div> : <div style={{ height: 700, width: '100%' }}>
+<Backdrop
+  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+  open={open}
+>
+<CircularProgress color="inherit" />
+
+</Backdrop>
       <DataGrid
         rows={products}
         getRowId={(row) => row.document_id}
