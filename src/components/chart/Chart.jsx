@@ -31,10 +31,9 @@ const Chart = ({ aspect, title }) => {
      Total:total
   });
  });
- setData(list)
+ setData(list.reverse())
  setLoading(true)
  console.log(data)
- setData(data.reverse())
 });
   },[])
   return (

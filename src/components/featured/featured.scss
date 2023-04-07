@@ -26,6 +26,7 @@
 
     .featuredChart {
       width: 100px;
+      color: green;
       height: 100px;
     }
 
@@ -76,4 +77,11 @@
       }
     }
   }
+}
+.CircularProgressbar .CircularProgressbar-path{
+      stroke: #44BE89 !important;
+}
+.CircularProgressbar .CircularProgressbar-text{
+  fill: #44BE89 !important;
+
 }

@@ -19,7 +19,6 @@ useEffect(()=>{
      const {
       total
      } = doc.data();
-     console.log(total)
      temp = temp + total
      setTotal(temp)
     });
@@ -36,7 +35,7 @@ useEffect(()=>{
       </div>
       <div className="bottom">
         <div className="featuredChart">
-          <CircularProgressbar value={70} text={"90%"} strokeWidth={5} />
+          <CircularProgressbar  value={70} text={"90%"} strokeWidth={5} />
         </div>
         <p className="title">Totales Commandes Livrées</p>
         <p className="amount">{totalmad} DH</p>

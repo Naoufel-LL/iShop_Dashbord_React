@@ -6,7 +6,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import { useEffect,useState } from "react";
 import { db } from "../../firebase";
-import { collection,doc,getCountFromServer,onSnapshot } from "firebase/firestore";
+import { collection,doc,getCountFromServer,onSnapshot ,getDoc} from "firebase/firestore";
 import { Skeleton } from "@mui/material";
 const Widget = ({ type }) => {
   let data;
@@ -15,6 +15,7 @@ const Widget = ({ type }) => {
   const [productnbr,setProductNbr] = useState(0)
  const  [totalmad,setTotal] = useState(0)
  const [loading,setLoading]=useState(false)
+ const [percentageCommande,setPercentageCommande] = useState(0)
   useEffect(async ()=>{
     try {
       const colusers = collection(db, "users");
@@ -31,14 +32,24 @@ const Widget = ({ type }) => {
     const snapshot2 = await getCountFromServer(colcommandes);
     console.log('count commandes : ', snapshot2.data().count);
     setCommandeNbr(snapshot2.data().count)
-     
+    
+    const docRef = doc(db, "stats",`${new Date().toLocaleDateString("es-CL")}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data().nbrCommande);
+       let perc = ((docSnap.data().nbrCommande) / snapshot2.data().count) * 100
+       setPercentageCommande(perc)
+    } else {
+      console.log("No such document!");
+       setPercentageCommande(0)
+    }
+    
     const unsubscribe = onSnapshot(colcommandes, (querySnapshot) => {
       let temp = 0
       querySnapshot.forEach((doc) => {
        const {
         total
        } = doc.data();
-       console.log(total)
        temp = temp + total
        setTotal(temp)
       });
@@ -140,7 +151,7 @@ const Widget = ({ type }) => {
       <div className="right">
         <div className="percentage positive">
           <KeyboardArrowUpIcon />
-          {diff} %
+          {percentageCommande.toFixed(2)} %
         </div>
         {data.icon}
       </div>
